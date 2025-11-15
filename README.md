@@ -44,25 +44,43 @@ NER-FLASK-APP/
 ├── requirements.txt
 
 ├── app.py
+
 ├── model_utils.py
+
 ├── train_model.py
 
+
 ├── data/
+
 │   └── (file data NERgrit)
+
+
 ├── models/
+
 │   └── ner_xlm_roberta_final/
+
 │       └── (semua file model seperti model.safetensors, tokenizer.json, dll.)
 
+
 ├── notebooks/
+
 │   └── train_ner_model.ipynb
+
 ├── results/
+
 │   └── (log, checkpoint lama)
 
+
 ├── static/
+
 │   ├── css/
+
 │   └── js/
+
 ├── templates/
+
 │   └── index.html
+
 └── venv/
 
 ##  How to Run the Deployment (Flask)
