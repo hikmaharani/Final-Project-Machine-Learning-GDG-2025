@@ -18,16 +18,16 @@ The final model performance metrics, evaluated on the dedicated test set using *
 
 | Metric | Score (Micro Average) |
 | :--- | :---: |
-| **F1 Score** | **0.8280** |
-| **Precision** | 0.8096 |
-| **Recall** | 0.8473 |
+| **F1 Score** | **0.83** |
+| **Precision** | 0.82 |
+| **Recall** | 0.85 |
 
 ### Detailed F1 Score
 | Entity | F1-Score |
 | :--- | :---: |
 | **PERSON** | 0.85 |
 | **PLACE** | 0.87 |
-| **ORGANISATION** | 0.69 |
+| **ORGANISATION** | 0.71 |
 
 ---
 
@@ -36,9 +36,13 @@ The final model performance metrics, evaluated on the dedicated test set using *
 ---
 
 NER-FLASK-APP/
+
 ├── .gitignore
+
 ├── README.md
+
 ├── requirements.txt
+
 ├── app.py
 ├── model_utils.py
 ├── train_model.py
