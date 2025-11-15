@@ -1,0 +1,21 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual Environment
+venv/
+.venv/
+
+# PyTorch/HuggingFace Model Artifacts (Folder ini SANGAT BESAR)
+models/
+ner_models/
+results_ner_improved/
+logs_improved/
+
+# Data cache/temporary files
+*.DS_Store
+*.ipynb_checkpoints
+data/*.cache
+
+# Log files
+*.log

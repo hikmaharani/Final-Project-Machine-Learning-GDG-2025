@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NER App Preview</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4A90E2;
+            --primary-hover-color: #357ABD;
+            --background-color: #f4f7f9;
+            --container-bg-color: #ffffff;
+            --text-color: #333;
+            --border-color: #e0e0e0;
+            --shadow-color: rgba(0, 0, 0, 0.08);
+
+            --font-family: 'Poppins', sans-serif;
+
+            /* Entity Colors */
+            --color-per: #dbeafe; /* blue-100 */
+            --color-org: #dcfce7; /* green-100 */
+            --color-loc: #fee2e2; /* red-100 */
+            --color-misc: #fef3c7; /* yellow-100 */
+            --text-per: #1e40af; /* blue-800 */
+            --text-org: #166534; /* green-800 */
+            --text-loc: #991b1b; /* red-800 */
+            --text-misc: #92400e; /* yellow-800 */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            background-color: var(--container-bg-color);
+            border-radius: 12px;
+            box-shadow: 0 10px 25px var(--shadow-color);
+            padding: 2.5rem 3rem;
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        .input-section {
+            margin-bottom: 2rem;
+        }
+
+        .input-section label {
+            display: block;
+            text-align: left;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            font-family: var(--font-family);
+            font-size: 1rem;
+            resize: vertical;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            font-family: var(--font-family);
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: background-color 0.3s, transform 0.2s;
+            width: 100%;
+            max-width: 250px;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover-color);
+            transform: translateY(-2px);
+        }
+
+        button:disabled {
+            background-color: #a0c3e8;
+            cursor: not-allowed;
+        }
+
+        .results-section h2 {
+            text-align: left;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .results-output {
+            background-color: #f9fafb;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            min-height: 100px;
+            text-align: left;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .results-output .placeholder {
+            color: #888;
+            font-style: italic;
+        }
+
+        .entity {
+            padding: 0.2em 0.6em;
+            margin: 0 0.2em;
+            border-radius: 0.3em;
+            font-weight: 500;
+        }
+
+        .entity::after {
+            content: attr(data-label);
+            font-size: 0.75em;
+            font-weight: 600;
+            margin-left: 0.5em;
+            padding: 0.1em 0.4em;
+            border-radius: 0.25em;
+            background-color: rgba(0,0,0,0.1);
+            color: inherit;
+            vertical-align: middle;
+        }
+
+        .entity-PER { background-color: var(--color-per); color: var(--text-per); }
+        .entity-ORG { background-color: var(--color-org); color: var(--text-org); }
+        .entity-LOC { background-color: var(--color-loc); color: var(--text-loc); }
+        .entity-MISC { background-color: var(--color-misc); color: var(--text-misc); }
+
+        .legend {
+            margin-top: 1.5rem;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+
+        .legend-color {
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            margin-right: 8px;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        footer {
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            color: #999;
+        }
+
+        .loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        .loader-overlay.show {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 1rem;
+            }
+            .container {
+                padding: 2rem 1.5rem;
+            }
+            header h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root">
+        <div class="container">
+            <header>
+                <h1>Functional Text Segmentation</h1>
+                <p>A Named Entity Recognition (NER) Application</p>
+            </header>
+            <main>
+                <div class="input-section">
+                    <label for="text-input">Enter text to analyze:</label>
+                    <textarea id="text-input" rows="10" placeholder="Paste your text here... e.g., 'Apple is looking at buying U.K. startup for $1 billion in London.'"></textarea>
+                    <button id="analyze-btn">Analyze Text</button>
+                </div>
+                <div class="results-section">
+                    <h2>Analysis Results</h2>
+                    <div id="results-output" class="results-output" aria-live="polite">
+                        <p class="placeholder">Your analyzed text will appear here.</p>
+                    </div>
+                    <div id="legend" class="legend">
+                        <!-- Legend will be populated by JS -->
+                    </div>
+                </div>
+            </main>
+            <footer>
+                <p>Powered by Flask & Gemini</p>
+            </footer>
+            <div id="loader" class="loader-overlay" role="status" aria-label="Loading analysis">
+                <div class="spinner"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // This script is embedded for preview purposes.
+        // For your Flask project, use the separate 'static/js/script.js' file.
+        document.addEventListener('DOMContentLoaded', () => {
+            const analyzeBtn = document.getElementById('analyze-btn');
+            const textInput = document.getElementById('text-input');
+            const resultsOutput = document.getElementById('results-output');
+            const loader = document.getElementById('loader');
+            const legendContainer = document.getElementById('legend');
+
+            const entityColors = {
+                'PER': { name: 'Person', color: 'var(--color-per)' },
+                'ORG': { name: 'Organization', color: 'var(--color-org)' },
+                'LOC': { name: 'Location', color: 'var(--color-loc)' },
+                'MISC': { name: 'Miscellaneous', color: 'var(--color-misc)' }
+            };
+
+            function populateLegend() {
+                legendContainer.innerHTML = '';
+                for (const key in entityColors) {
+                    const item = entityColors[key];
+                    const legendItem = document.createElement('div');
+                    legendItem.className = 'legend-item';
+                    legendItem.innerHTML = `
+                        <div class="legend-color" style="background-color: ${item.color};"></div>
+                        <span>${item.name}</span>
+                    `;
+                    legendContainer.appendChild(legendItem);
+                }
+            }
+            
+            const showLoader = (show) => {
+                if (show) {
+                    loader.classList.add('show');
+                    analyzeBtn.disabled = true;
+                } else {
+                    loader.classList.remove('show');
+                    analyzeBtn.disabled = false;
+                }
+            };
+
+            const renderResults = (data) => {
+                resultsOutput.innerHTML = '';
+                if (!data || data.length === 0) {
+                    resultsOutput.innerHTML = '<p class="placeholder">No entities found in the text.</p>';
+                    return;
+                }
+
+                const fragment = document.createDocumentFragment();
+                data.forEach(item => {
+                    if (item.label === 'O') {
+                        fragment.appendChild(document.createTextNode(item.text));
+                    } else {
+                        const span = document.createElement('span');
+                        span.className = `entity entity-${item.label}`;
+                        span.textContent = item.text;
+                        span.setAttribute('data-label', item.label);
+                        fragment.appendChild(span);
+                    }
+                });
+                resultsOutput.appendChild(fragment);
+            };
+
+            analyzeBtn.addEventListener('click', async () => {
+                const text = textInput.value.trim();
+                if (!text) {
+                    alert('Please enter some text to analyze.');
+                    return;
+                }
+                
+                showLoader(true);
+                resultsOutput.innerHTML = '<p class="placeholder">Analyzing...</p>';
+
+                try {
+                    const data = await new Promise(resolve => {
+                        setTimeout(() => {
+                            const sampleText = "Apple is looking at buying U.K. startup for $1 billion in London.";
+                            if (text === sampleText) {
+                                resolve([
+                                    { text: 'Apple', label: 'ORG' },
+                                    { text: ' is looking at buying ', label: 'O' },
+                                    { text: 'U.K.', label: 'LOC' },
+                                    { text: ' startup for $1 billion in ', label: 'O' },
+                                    { text: 'London', label: 'LOC' },
+                                    { text: '.', label: 'O' }
+                                ]);
+                            } else {
+                                resolve([
+                                    { text: 'This is a mocked response for "', label: 'O' },
+                                    { text: text.substring(0, 20) + '...', label: 'MISC' },
+                                    { text: '". Please connect to the real Flask backend.', label: 'O' },
+                                ]);
+                            }
+                        }, 1500);
+                    });
+
+                    renderResults(data);
+
+                } catch (error) {
+                    console.error('Error:', error);
+                    resultsOutput.innerHTML = `<p class="placeholder" style="color: red;">Error analyzing text. Please check the console for details.</p>`;
+                } finally {
+                    showLoader(false);
+                }
+            });
+            
+            populateLegend();
+        });
+    </script>
+</body>
+</html>

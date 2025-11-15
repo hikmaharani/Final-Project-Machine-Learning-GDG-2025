@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NER App Preview</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* --- CSS STYLING --- */
+        :root {
+            --primary-color: #4A90E2;
+            --primary-hover-color: #357ABD;
+            --background-color: #f4f7f9;
+            --container-bg-color: #ffffff;
+            --text-color: #333;
+            --border-color: #e0e0e0;
+            --shadow-color: rgba(0, 0, 0, 0.08);
+            --font-family: 'Poppins', sans-serif;
+
+            /* Entity Colors (Sinkron dengan model_utils.py) */
+            --color-per: #ff9999; /* Person (Biru Muda) */
+            --color-org: #99ccff; /* Organisation (Hijau Muda) */
+            --color-loc: #99ff99; /* Place (Merah Muda) */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            background-color: var(--container-bg-color);
+            border-radius: 12px;
+            box-shadow: 0 10px 25px var(--shadow-color);
+            padding: 2.5rem 3rem;
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        .input-section {
+            margin-bottom: 2rem;
+        }
+
+        .input-section label {
+            display: block;
+            text-align: left;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            font-family: var(--font-family);
+            font-size: 1rem;
+            resize: vertical;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            font-family: var(--font-family);
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: background-color 0.3s, transform 0.2s;
+            width: 100%;
+            max-width: 250px;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover-color);
+            transform: translateY(-2px);
+        }
+
+        .results-section h2 {
+            text-align: left;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .results-output {
+            background-color: #f9fafb;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            min-height: 100px;
+            text-align: left;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .placeholder {
+            color: #888;
+            font-style: italic;
+        }
+
+        /* Styling untuk entitas yang di-inject oleh Python */
+        .entity {
+            padding: 0.2em 0.6em;
+            margin: 0 0.2em;
+            border-radius: 0.3em;
+            font-weight: 500;
+            display: inline-block;
+        }
+        
+        .legend {
+            margin-top: 1.5rem;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+
+        .legend-color {
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            margin-right: 8px;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        footer {
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Functional Text Segmentation</h1>
+            <p>Named Entity Recognition (NER) untuk Bahasa Indonesia</p>
+        </header>
+        <main>
+            <form method="POST" action="/">
+                <div class="input-section">
+                    <label for="text-input">Masukkan Teks untuk Analisis:</label>
+                    <textarea 
+                        id="text-input" 
+                        name="text_input" 
+                        rows="10" 
+                        placeholder="Contoh: 'Presiden Joko Widodo mengunjungi Jakarta pada hari Senin.'"
+                    >{{ raw_text if raw_text else '' }}</textarea>
+                    
+                    <button type="submit">Analisis Teks</button>
+                </div>
+            </form>
+
+            <div class="results-section">
+                <h2>Hasil Analisis Entitas</h2>
+                <div id="results-output" class="results-output" aria-live="polite">
+                    {% if prediction_html %}
+                        {{ prediction_html | safe }}
+                    {% else %}
+                        <p class="placeholder">Hasil teks yang di-highlight akan muncul di sini.</p>
+                    {% endif %}
+                </div>
+                
+                <div id="legend" class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: var(--color-per);"></div>
+                        <span>PERSON (Orang)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: var(--color-loc);"></div>
+                        <span>PLACE (Tempat)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: var(--color-org);"></div>
+                        <span>ORGANISATION (Organisasi)</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <footer>
+            <p>NER Deployment powered by Flask & XLM-RoBERTa</p>
+        </footer>
+    </div>
+</body>
+</html>
