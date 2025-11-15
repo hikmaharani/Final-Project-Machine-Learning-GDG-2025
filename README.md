@@ -34,42 +34,31 @@ The final model performance metrics, evaluated on the dedicated test set using *
 ##  Project Structure
 
 ---
+
 NER-FLASK-APP/
 ├── .gitignore
 ├── README.md
-├── app.py
-├── data/
-│   ├── test_preprocess_masked_label.txt
-│   ├── test_preprocess.txt
-│   ├── train_preprocess.txt
-│   ├── valid_preprocess.txt
-│   ├── vocab_uncased.txt
-│   └── vocab.txt
-├── evaluate_model.py
-├── index.html
-├── model_utils.py
-├── notebooks/
-    ├── train_ner_model.ipynb
-├── __pycache__/
 ├── requirements.txt
-├── models/
-    ├── ner_models/
-        ├── fig.json
-        ├── model.safetensors
-        ├── sentencepiece.bpe.model
-        ├── special_tokens_map.json
-        ├── tokenizer_config.json
-        ├── tokenizer.json
-        └──  training_args.bin
-├── result_ner_improved/
-    ├── checkpoint-100
-    └── ceckpoint-200
-├── static/
-    ├── CSS/
-    ├── js/
-├── templates/
-│   └── index.html  
+├── app.py
+├── model_utils.py
 ├── train_model.py
+
+├── data/
+│   └── (file data NERgrit)
+├── models/
+│   └── ner_xlm_roberta_final/
+│       └── (semua file model seperti model.safetensors, tokenizer.json, dll.)
+
+├── notebooks/
+│   └── train_ner_model.ipynb
+├── results/
+│   └── (log, checkpoint lama)
+
+├── static/
+│   ├── css/
+│   └── js/
+├── templates/
+│   └── index.html
 └── venv/
 
 ##  How to Run the Deployment (Flask)
